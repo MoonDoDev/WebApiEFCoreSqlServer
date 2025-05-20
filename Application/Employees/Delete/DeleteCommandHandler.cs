@@ -4,9 +4,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Employees;
 
-public sealed class DeleteCommandHandler(
+public interface IDeleteCommandHandler : ICommandHandler<DeleteCommand>
+{
+	Task Handle( DeleteCommand command, CancellationToken cancellationToken = default );
+}
+
+internal sealed class DeleteCommandHandler(
 	IEmployeeRepository employeeRepository )
-	: ICommandHandler<DeleteCommand>
+	: IDeleteCommandHandler
 {
 	public async Task Handle( DeleteCommand employee, CancellationToken cancellationToken = default )
 	{

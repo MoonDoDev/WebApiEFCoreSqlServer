@@ -4,9 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Employees;
 
-public sealed class GetAllQueryHandler(
+public interface IQueryAllHandler : IQueryHandler<IEnumerable<Employee>>
+{
+	Task<IEnumerable<Employee>> Handle( CancellationToken cancellationToken = default );
+}
+
+internal sealed class GetAllQueryHandler(
 	IAppDbContext appDbContext )
-	: IQueryHandler<IEnumerable<Employee>>
+	: IQueryAllHandler
 {
 	public async Task<IEnumerable<Employee>> Handle( CancellationToken cancellationToken = default )
 	{

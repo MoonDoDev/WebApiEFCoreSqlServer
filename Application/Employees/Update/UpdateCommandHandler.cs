@@ -4,9 +4,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Employees;
 
-public sealed class UpdateCommandHandler(
+public interface IUpdateCommandHandler : ICommandHandler<UpdateCommand, Employee>
+{
+	Task<Employee> Handle( UpdateCommand command, CancellationToken cancellationToken = default );
+}
+
+internal sealed class UpdateCommandHandler(
 	IEmployeeRepository employeeRepository )
-	: ICommandHandler<UpdateCommand, Employee>
+	: IUpdateCommandHandler
 {
 	public async Task<Employee> Handle( UpdateCommand employee, CancellationToken cancellationToken = default )
 	{

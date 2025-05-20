@@ -13,7 +13,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 
 	[HttpGet( "/getall" )]
 	public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(
-		GetAllQueryHandler queryHandler )
+		IQueryAllHandler queryHandler )
 	{
 		try
 		{
@@ -32,7 +32,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	[HttpGet( "/getone/{id:guid}" )]
 	public async Task<ActionResult<Employee>> GetEmployee(
 		Guid id,
-		GetByIdQueryHandler queryHandler )
+		IQueryOneHandler queryHandler )
 	{
 		try
 		{
@@ -52,7 +52,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	[HttpPost( "/create" )]
 	public async Task<ActionResult<Employee>> CreateEmployee(
 		CreateCommand employee,
-		CreateCommandHandler commandHandler )
+		ICreateCommandHandler commandHandler )
 	{
 		try
 		{
@@ -71,7 +71,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	[HttpPut( "/update" )]
 	public async Task<ActionResult<Employee>> UpdateEmployee(
 		UpdateCommand employee,
-		UpdateCommandHandler commandHandler )
+		IUpdateCommandHandler commandHandler )
 	{
 		try
 		{
@@ -90,7 +90,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	[HttpDelete( "/delete/{id:guid}" )]
 	public async Task<ActionResult> DeleteEmployee(
 		Guid id,
-		DeleteCommandHandler commandHandler )
+		IDeleteCommandHandler commandHandler )
 	{
 		try
 		{

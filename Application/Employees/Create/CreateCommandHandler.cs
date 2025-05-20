@@ -4,18 +4,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Employees;
 
-public sealed class CreateCommandHandler(
+public interface ICreateCommandHandler : ICommandHandler<CreateCommand, Employee>
+{
+	Task<Employee> Handle( CreateCommand command, CancellationToken cancellationToken = default );
+}
+
+internal sealed class CreateCommandHandler(
 	IEmployeeRepository employeeRepository )
-	: ICommandHandler<CreateCommand, Employee>
+	: ICreateCommandHandler
 {
 	public async Task<Employee> Handle( CreateCommand employee, CancellationToken cancellationToken = default )
 	{
 		ArgumentNullException.ThrowIfNull( employee );
 
-		var employeeEntity = new Employee( 
-			Guid.NewGuid(), 
-			employee.Name, 
-			employee.Position, 
+		var employeeEntity = new Employee(
+			Guid.NewGuid(),
+			employee.Name,
+			employee.Position,
 			employee.Salary );
 
 		await employeeRepository.AddAsync( employeeEntity, cancellationToken );
