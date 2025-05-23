@@ -17,14 +17,14 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	{
 		try
 		{
-			var employees = await queryHandler.Handle();
+			var employees = await queryHandler.Execute();
 
-			_logger.LogInformation( "Fetched {Count} employees", employees.Count() );
+			FastLogger.LogInfo( _logger, $"Fetched {employees.Count()} employees", null );
 			return Ok( employees );
 		}
 		catch ( Exception e )
 		{
-			_logger.LogError( "GetEmployees throws an exception: {Msg}", e.Message );
+			FastLogger.LogError( _logger, "GetEmployees throws an exception", e );
 			return BadRequest( e.Message );
 		}
 	}
@@ -37,14 +37,14 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 		try
 		{
 			var employeeId = new GetByIdQuery { Id = id };
-			var employee = await queryHandler.Handle( employeeId );
+			var employee = await queryHandler.Execute( employeeId );
 
-			_logger.LogInformation( "Fetched employee with id {Id}", id );
+			FastLogger.LogInfo( _logger, $"Fetched employee with id {id}", null );
 			return Ok( employee );
 		}
 		catch ( Exception e )
 		{
-			_logger.LogError( "GetEmployee throws an exception: {Msg}", e.Message );
+			FastLogger.LogError( _logger, "GetEmployee throws an exception", e );
 			return ( e is NotFoundEmployeeException ) ? NotFound( e.Message ) : BadRequest( e.Message );
 		}
 	}
@@ -56,14 +56,14 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	{
 		try
 		{
-			var result = await commandHandler.Handle( employee );
+			var result = await commandHandler.Execute( employee );
 
-			_logger.LogInformation( "Created employee with id {Id}", result.Id );
+			FastLogger.LogInfo( _logger, $"Created employee with id {result.Id}", null );
 			return CreatedAtAction( nameof( GetEmployee ), new { id = result.Id }, result );
 		}
 		catch ( Exception e )
 		{
-			_logger.LogError( "CreateEmployee throws an exception: {Msg}", e.Message );
+			FastLogger.LogError( _logger, "CreateEmployee throws an exception", e );
 			return BadRequest( e.Message );
 		}
 	}
@@ -75,14 +75,14 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 	{
 		try
 		{
-			var result = await commandHandler.Handle( employee );
+			var result = await commandHandler.Execute( employee );
 
-			_logger.LogInformation( "Updated employee with id {Id}", result.Id );
+			FastLogger.LogInfo( _logger, $"Updated employee with id {result.Id}", null );
 			return Ok( result );
 		}
 		catch ( Exception e )
 		{
-			_logger.LogError( "UpdateEmployee throws an exception: {Msg}", e.Message );
+			FastLogger.LogError( _logger, "UpdateEmployee throws an exception", e );
 			return ( e is NotFoundEmployeeException ) ? NotFound( e.Message ) : BadRequest( e.Message );
 		}
 	}
@@ -95,14 +95,14 @@ public class EmployeesController( ILogger<EmployeesController> logger ) : Contro
 		try
 		{
 			var employeeId = new DeleteCommand { Id = id };
-			await commandHandler.Handle( employeeId );
+			await commandHandler.Execute( employeeId );
 
-			_logger.LogInformation( "Deleted employee with id {Id}", id );
+			FastLogger.LogInfo( _logger, $"Deleted employee with id {id}", null );
 			return NoContent();
 		}
 		catch ( Exception e )
 		{
-			_logger.LogError( "DeleteEmployee throws an exception: {Msg}", e.Message );
+			FastLogger.LogError( _logger, "DeleteEmployee throws an exception", e );
 			return ( e is NotFoundEmployeeException ) ? NotFound( e.Message ) : BadRequest( e.Message );
 		}
 	}

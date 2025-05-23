@@ -4,16 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Employees;
 
-public interface IQueryAllHandler : IQueryHandler<IEnumerable<Employee>>
-{
-	Task<IEnumerable<Employee>> Handle( CancellationToken cancellationToken = default );
-}
+public interface IQueryAllHandler : IQueryHandler<IEnumerable<Employee>> { }
 
-internal sealed class GetAllQueryHandler(
-	IAppDbContext appDbContext )
-	: IQueryAllHandler
+internal sealed class GetAllQueryHandler( 
+	IAppDbContext appDbContext ) : IQueryAllHandler
 {
-	public async Task<IEnumerable<Employee>> Handle( CancellationToken cancellationToken = default )
+	public async Task<IEnumerable<Employee>> Execute( CancellationToken cancellationToken = default )
 	{
 		return await appDbContext.Employees.ToListAsync( cancellationToken );
 	}

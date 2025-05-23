@@ -1,21 +1,25 @@
 ﻿using Application.Abstractions;
 using Domain.Employees;
-using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 
 namespace Application.Employees;
 
-public interface IQueryOneHandler : IQueryHandler<GetByIdQuery, Employee>
-{
-	Task<Employee> Handle( GetByIdQuery query, CancellationToken cancellationToken = default );
-}
+public interface IQueryOneHandler : IQueryHandler<GetByIdQuery, Employee> { }
 
-internal sealed class GetByIdQueryHandler(
-	IEmployeeRepository employeeRepository )
-	: IQueryOneHandler
+public sealed class GetByIdQueryHandler(
+	IEmployeeRepository employeeRepository ) : IQueryOneHandler
 {
-	public async Task<Employee> Handle( GetByIdQuery query, CancellationToken cancellationToken = default )
+	public async Task<Employee> Execute( GetByIdQuery query, CancellationToken cancellationToken = default )
 	{
 		ArgumentNullException.ThrowIfNull( query );
+
+		var validator = new GetByIdQueryValidator();
+		var result = await validator.ValidateAsync( query, cancellationToken );
+
+		if ( !result.IsValid )
+		{
+			throw new ValidationException( result.Errors );
+		}
 
 		var employee = await employeeRepository.GetByIdAsync( query.Id, cancellationToken ) ??
 			throw new NotFoundEmployeeException( query.Id );
@@ -24,8 +28,12 @@ internal sealed class GetByIdQueryHandler(
 	}
 }
 
-public record GetByIdQuery
+internal class GetByIdQueryValidator: AbstractValidator<GetByIdQuery>
 {
-	[Required( ErrorMessage = "Id is required." )]
-	public required Guid Id { get; init; }
+	public GetByIdQueryValidator()
+	{
+		RuleFor( x => x.Id )
+			.NotEmpty()
+			.WithMessage( "Id is required." );
+	}
 }

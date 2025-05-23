@@ -1,23 +1,28 @@
 ﻿using Application.Abstractions;
 using Domain.Employees;
-using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 
 namespace Application.Employees;
 
-public interface IUpdateCommandHandler : ICommandHandler<UpdateCommand, Employee>
-{
-	Task<Employee> Handle( UpdateCommand command, CancellationToken cancellationToken = default );
-}
+public interface IUpdateCommandHandler : ICommandHandler<UpdateCommand, Employee> { }
 
-internal sealed class UpdateCommandHandler(
+public sealed class UpdateCommandHandler(
 	IEmployeeRepository employeeRepository )
 	: IUpdateCommandHandler
 {
-	public async Task<Employee> Handle( UpdateCommand employee, CancellationToken cancellationToken = default )
+	public async Task<Employee> Execute( UpdateCommand employee, CancellationToken cancellationToken = default )
 	{
 		ArgumentNullException.ThrowIfNull( employee );
 
-		var existingEmployee = await employeeRepository.GetByIdAsync( employee.Id, cancellationToken ) ?? 
+		var validator = new UpdateCommandValidator();
+		var result = await validator.ValidateAsync( employee, cancellationToken );
+
+		if ( !result.IsValid )
+		{
+			throw new ValidationException( result.Errors );
+		}
+
+		var existingEmployee = await employeeRepository.GetByIdAsync( employee.Id, cancellationToken ) ??
 			throw new NotFoundEmployeeException( employee.Id );
 
 		existingEmployee.Update( employee.Name, employee.Position, employee.Salary );
@@ -26,18 +31,23 @@ internal sealed class UpdateCommandHandler(
 	}
 }
 
-public record UpdateCommand
+internal class UpdateCommandValidator : AbstractValidator<UpdateCommand>
 {
-	[Required( ErrorMessage = "Id is required." )]
-	public Guid Id { get; init; }
-
-	[Required( ErrorMessage = "Name is required." )]
-	public required string Name { get; init; }
-
-	[Required( ErrorMessage = "Position is required." )]
-	public required string Position { get; init; }
-
-	[Required( ErrorMessage = "Salary is required." )]
-	[Range( 0, double.MaxValue, ErrorMessage = "Salary must be a positive number." )]
-	public required decimal Salary { get; init; }
+	public UpdateCommandValidator()
+	{
+		RuleFor( x => x.Id )
+			.NotEmpty()
+			.WithMessage( "Id is required." );
+		RuleFor( x => x.Name )
+			.NotEmpty()
+			.MinimumLength( 3 )
+			.WithMessage( "Name is required." );
+		RuleFor( x => x.Position )
+			.NotEmpty()
+			.MinimumLength( 3 )
+			.WithMessage( "Position is required." );
+		RuleFor( x => x.Salary )
+			.GreaterThan( 0 )
+			.WithMessage( "Salary must be a positive number." );
+	}
 }

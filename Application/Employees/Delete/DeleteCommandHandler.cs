@@ -1,21 +1,26 @@
 ﻿using Application.Abstractions;
 using Domain.Employees;
-using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 
 namespace Application.Employees;
 
-public interface IDeleteCommandHandler : ICommandHandler<DeleteCommand>
-{
-	Task Handle( DeleteCommand command, CancellationToken cancellationToken = default );
-}
+public interface IDeleteCommandHandler : ICommandHandler<DeleteCommand> { }
 
-internal sealed class DeleteCommandHandler(
+public sealed class DeleteCommandHandler(
 	IEmployeeRepository employeeRepository )
 	: IDeleteCommandHandler
 {
-	public async Task Handle( DeleteCommand employee, CancellationToken cancellationToken = default )
+	public async Task Execute( DeleteCommand employee, CancellationToken cancellationToken = default )
 	{
 		ArgumentNullException.ThrowIfNull( employee );
+
+		var validator = new DeleteCommandValidator();
+		var result = await validator.ValidateAsync( employee, cancellationToken );
+
+		if ( !result.IsValid )
+		{
+			throw new ValidationException( result.Errors );
+		}
 
 		var existingEmployee = await employeeRepository.GetByIdAsync( employee.Id, cancellationToken ) ??
 			throw new NotFoundEmployeeException( employee.Id );
@@ -24,8 +29,12 @@ internal sealed class DeleteCommandHandler(
 	}
 }
 
-public record DeleteCommand
+internal class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 {
-	[Required( ErrorMessage = "Id is required." )]
-	public required Guid Id { get; init; }
+	public DeleteCommandValidator()
+	{
+		RuleFor( x => x.Id )
+			.NotEmpty()
+			.WithMessage( "Id is required." );
+	}
 }
