@@ -62,7 +62,7 @@ In this layer, we do the following:
 - [x]  **Global Exception Handling**: The project uses global exception handling to handle exceptions that occur in the application and to return appropriate HTTP responses.
 - [x]  **FastLogger**: The project implements a simple logger using the FastLogger library to log messages to the console. This allows for better debugging and monitoring of the application.
  
-## Dependencias
+## Dependencies
 
 ```
 "FluentValidation" Version="12.0.0"
@@ -81,7 +81,7 @@ In this layer, we do the following:
 ```
 ---------
 
-[**YouTube**](https://www.youtube.com/@hectorgomez-backend-dev/featured) - 
-[**LinkedIn**](https://www.linkedin.com/in/hectorgomez-backend-dev/) - 
-[**GitHub**](https://github.com/MoonDoDev/WebApiEFCoreSqlServer)
+[**YouTube**](https://www.youtube.com/@hectorgomez-backend-dev/featured){:target="_blank"} - 
+[**LinkedIn**](https://www.linkedin.com/in/hectorgomez-backend-dev/){:target="_blank"} - 
+[**GitHub**](https://github.com/MoonDoDev/WebApiEFCoreSqlServer){:target="_blank"}
 
