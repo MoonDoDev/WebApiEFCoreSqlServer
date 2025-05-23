@@ -81,7 +81,7 @@ In this layer, we do the following:
 ```
 ---------
 
-[**YouTube**](https://www.youtube.com/@hectorgomez-backend-dev/featured){:target="_blank"} - 
-[**LinkedIn**](https://www.linkedin.com/in/hectorgomez-backend-dev/){:target="_blank"} - 
-[**GitHub**](https://github.com/MoonDoDev/WebApiEFCoreSqlServer){:target="_blank"}
+[**YouTube**](https://www.youtube.com/@hectorgomez-backend-dev/featured) - 
+[**LinkedIn**](https://www.linkedin.com/in/hectorgomez-backend-dev/) - 
+[**GitHub**](https://github.com/MoonDoDev/WebApiEFCoreSqlServer)
 
