@@ -1,8 +1,5 @@
 ﻿namespace Domain.Employees;
 
-public class NotFoundEmployeeException : Exception
-{
-	public NotFoundEmployeeException( Guid id ) :
-		base( $"Employee with ID {id} not found." )
-	{ }
-}
+public class NotFoundEmployeeException( Guid id )
+    : Exception( $"Employee with ID {id} not found." )
+{ }

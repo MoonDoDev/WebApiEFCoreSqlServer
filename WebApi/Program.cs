@@ -18,15 +18,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddPersistence( builder.Configuration );
+builder.Services.AddWebApiServices();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if ( app.Environment.IsDevelopment() )
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
-	app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();

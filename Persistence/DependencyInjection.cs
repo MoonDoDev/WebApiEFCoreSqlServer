@@ -8,17 +8,18 @@ namespace Persistence;
 
 public static class DependencyInjection
 {
-	public const string DBConnectionName = "DefaultConnection";
+    public const string DBConnectionName = "DefaultConnection";
 
-	public static IServiceCollection AddPersistence( this IServiceCollection services, IConfiguration configuration )
-	{
-		services.AddDbContext<AppDbContext>( options => 
-			options.UseSqlServer( configuration.GetConnectionString( DBConnectionName ),
-				opt => opt.MigrationsAssembly( "Persistence" ) ) );
+    public static IServiceCollection AddPersistence( this IServiceCollection services, IConfiguration configuration )
+    {
+        services.AddDbContext<AppDbContext>( options =>
+            options.UseSqlServer( configuration.GetConnectionString( DBConnectionName ),
+                opt => opt.MigrationsAssembly( "Persistence" ) ) );
 
-		services.AddScoped<IAppDbContext>( provider => provider.GetRequiredService<AppDbContext>() );
-		services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IAppDbContext>( provider => provider.GetRequiredService<AppDbContext>() );
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddMemoryCache();
 
-		return services;
-	}
+        return services;
+    }
 }

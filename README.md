@@ -51,6 +51,8 @@ In this layer, we do the following:
 - [x]  **Domain Driven Design**: The project follows Domain Driven Design principles to ensure that the domain logic is separated from the application logic.
 - [x]  **Entity Framework Core**: The project uses Entity Framework Core as the ORM to interact with the database.
 - [x]  **Migrations**: The project uses EF Core migrations to create and update the database schema.
+- [x]  **Fluent API**: The project uses Fluent API to configure the properties of the Employee entity, such as the table name and column names.
+- [x]  **Extension Methods**: The project uses extension methods to register the services and repositories in the ServiceCollection. This helps to keep the Startup class clean and organized.
 - [x]  **Dependency Injection**: The project uses dependency injection to manage the dependencies between the different layers of the application.
 - [x]  **FluentValidation**: The project uses FluentValidation to validate the request models for the API endpoints.
 - [x]  **SOLID**: The project follows the SOLID principles to ensure that the code is maintainable and extensible.
@@ -61,6 +63,8 @@ In this layer, we do the following:
 - [x]  **Async/Await**: The project uses async/await to improve the performance of the application and to avoid blocking the main thread.
 - [x]  **Global Exception Handling**: The project uses global exception handling to handle exceptions that occur in the application and to return appropriate HTTP responses.
 - [x]  **FastLogger**: The project implements a simple logger using the FastLogger library to log messages to the console. This allows for better debugging and monitoring of the application.
+- [x]  **Memory Cache**: The project uses memory cache to cache the results of the queries. This helps to improve the performance of the application by reducing the number of database calls.
+- [x]  **Api Versioning**: The project uses API versioning to allow for multiple versions of the API to coexist. This helps to ensure that the API is backward compatible and allows for future changes without breaking existing clients.
  
 ## Dependencies
 
@@ -78,6 +82,8 @@ In this layer, we do the following:
 "Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1-Preview.1"
 "Swashbuckle.AspNetCore" Version="8.1.1"
 "Microsoft.EntityFrameworkCore.Tools" Version="9.0.5"
+"Asp.Versioning.Http" Version="8.1.0"
+"Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0"
 ```
 ---------
 
