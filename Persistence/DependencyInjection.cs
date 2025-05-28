@@ -1,23 +1,37 @@
-﻿using Application.Abstractions;
+using Application.Abstractions;
 using Domain.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Persistence;
 
 public static class DependencyInjection
 {
-    public const string DBConnectionName = "DefaultConnection";
-
-    public static IServiceCollection AddPersistence( this IServiceCollection services, IConfiguration configuration )
+    public static IServiceCollection AddPersistence(
+        this IServiceCollection services,
+        IConfiguration configuration )
     {
+        var connectionString = configuration.GetConnectionString( Commons.DB_CONNECTION_NAME ) ??
+            throw new InvalidOperationException( $"Connection string '{Commons.DB_CONNECTION_NAME}' is not configured." );
+
         services.AddDbContext<AppDbContext>( options =>
-            options.UseSqlServer( configuration.GetConnectionString( DBConnectionName ),
+            options.UseSqlServer( connectionString,
                 opt => opt.MigrationsAssembly( "Persistence" ) ) );
 
         services.AddScoped<IAppDbContext>( provider => provider.GetRequiredService<AppDbContext>() );
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+        services.AddHealthChecks().AddSqlServer(
+            connectionString,
+            "select 1;",
+            null,
+            "Sql-Server",
+            HealthStatus.Unhealthy,
+            [ "ready" ],
+            TimeSpan.FromSeconds( 5 ) );
+
         services.AddMemoryCache();
 
         return services;

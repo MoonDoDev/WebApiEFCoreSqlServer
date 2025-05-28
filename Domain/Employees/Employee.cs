@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Employees;
 
-public record Employee
+public sealed record Employee
 {
 	[Key]
 	public Guid Id { get; private set; }
@@ -14,16 +14,16 @@ public record Employee
 
 	public Employee( Guid id, string name, string position, decimal salary )
 	{
-		this.Id = id;
-		this.Name = name;
-		this.Position = position;
-		this.Salary = salary;
+		Id = id;
+		Name = name;
+		Position = position;
+		Salary = salary;
 	}
 
 	public void Update( string name, string position, decimal salary )
 	{
-		this.Name = name;
-		this.Position = position;
-		this.Salary = salary;
+		Name = name;
+		Position = position;
+		Salary = salary;
 	}
 }

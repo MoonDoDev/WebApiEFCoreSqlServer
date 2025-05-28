@@ -65,25 +65,28 @@ In this layer, we do the following:
 - [x]  **FastLogger**: The project implements a simple logger using the FastLogger library to log messages to the console. This allows for better debugging and monitoring of the application.
 - [x]  **Memory Cache**: The project uses memory cache to cache the results of the queries. This helps to improve the performance of the application by reducing the number of database calls.
 - [x]  **Api Versioning**: The project uses API versioning to allow for multiple versions of the API to coexist. This helps to ensure that the API is backward compatible and allows for future changes without breaking existing clients.
- 
+- [x]  **Health Checks**: The project implements health checks to monitor the health of the application and the Database to ensure that the application is always available.
+
 ## Dependencies
 
 ```
 "FluentValidation" Version="12.0.0"
 "Microsoft.EntityFrameworkCore" Version="9.0.5"
+"AspNetCore.HealthChecks.SqlServer" Version="9.0.0"
+"Microsoft.AspNetCore" Version="2.3.0"
 "Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5"
-"Microsoft.Extensions.Configuration.Json" Version="9.0.5"
+Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.5"
 "coverlet.collector" Version="6.0.4"
 "Microsoft.EntityFrameworkCore.InMemory" Version="9.0.5"
 "Microsoft.NET.Test.Sdk" Version="17.14.0"
 "xunit" Version="2.9.3"
 "xunit.runner.visualstudio" Version="3.1.0"
+"Asp.Versioning.Http" Version="8.1.0"
+"Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0"
 "Microsoft.AspNetCore.OpenApi" Version="9.0.5"
 "Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1-Preview.1"
 "Swashbuckle.AspNetCore" Version="8.1.1"
 "Microsoft.EntityFrameworkCore.Tools" Version="9.0.5"
-"Asp.Versioning.Http" Version="8.1.0"
-"Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0"
 ```
 ---------
 
