@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Persistence;
 using System.Net.Mime;
 using System.Text.Json;
 
@@ -12,7 +11,7 @@ internal static class Extensions
     {
         services.AddApiVersioning( verOptions =>
         {
-            verOptions.DefaultApiVersion = new ApiVersion( Commons.EMPLOYEE_MAIN_API_VER );
+            verOptions.DefaultApiVersion = new ApiVersion( ApiVersions.Employees.CurrentMajor, 0 );
             verOptions.AssumeDefaultVersionWhenUnspecified = true;
             verOptions.ReportApiVersions = true;
 
@@ -29,12 +28,12 @@ internal static class Extensions
 
     public static WebApplication MapWebApiServices( this WebApplication app )
     {
-        app.MapHealthChecks( Commons.API_LIVES_ENDPOINT, new HealthCheckOptions
+        app.MapHealthChecks( ApiEndpoints.Health.Live, new HealthCheckOptions
         {
             Predicate = ( _ ) => false
         } );
 
-        app.MapHealthChecks( Commons.API_READY_ENDPOINT, new HealthCheckOptions
+        app.MapHealthChecks( ApiEndpoints.Health.Ready, new HealthCheckOptions
         {
             Predicate = ( check ) => check.Tags.Contains( "ready" ),
             ResponseWriter = async ( context, report ) =>

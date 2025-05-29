@@ -8,26 +8,25 @@ using Persistence;
 namespace WebApi.Controllers;
 
 [ApiController]
-[ApiVersion( Commons.EMPLOYEE_API_VER_1 )]
-[Route( Commons.EMPLOYEE_API_ROUTE )]
+[ApiVersion( ApiVersions.Employees.Current, Deprecated = false )]
 public class EmployeesController( ILogger<EmployeesController> logger ): ControllerBase
 {
     private readonly ILogger<EmployeesController> _logger = logger ??
         throw new ArgumentNullException( nameof( logger ) );
 
-    [HttpGet( "all" )]
-    [MapToApiVersion( Commons.EMPLOYEE_API_VER_1 )]
+    [HttpGet( ApiEndpoints.Employees.GetAll )]
+    [MapToApiVersion( ApiVersions.Employees.Current )]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(
         IQueryAllHandler queryHandler, IMemoryCache localCache )
     {
         try
         {
-            if ( !localCache.TryGetValue( Commons.EMPLOYEE_CACHE_KEY, out IEnumerable<Employee>? employees ) )
+            if ( !localCache.TryGetValue( Constants.EmployeeCacheKey, out IEnumerable<Employee>? employees ) )
             {
                 employees = await queryHandler.Execute();
 
                 localCache.Set(
-                    Commons.EMPLOYEE_CACHE_KEY,
+                    Constants.EmployeeCacheKey,
                     employees,
                     TimeSpan.FromMinutes( 5 ) );
             }
@@ -42,10 +41,10 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
-    [HttpGet( "one" )]
-    [MapToApiVersion( Commons.EMPLOYEE_API_VER_1 )]
+    [HttpGet( ApiEndpoints.Employees.GetOne )]
+    [MapToApiVersion( ApiVersions.Employees.Current )]
     public async Task<ActionResult<Employee>> GetEmployee(
-        [FromQuery] Guid id,
+        [FromRoute] Guid id,
         IQueryOneHandler queryHandler,
         IMemoryCache? localCache = null )
     {
@@ -70,8 +69,8 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
-    [HttpPost( "new" )]
-    [MapToApiVersion( Commons.EMPLOYEE_API_VER_1 )]
+    [HttpPost( ApiEndpoints.Employees.Create )]
+    [MapToApiVersion( ApiVersions.Employees.Current )]
     public async Task<ActionResult<Employee>> CreateEmployee(
         [FromBody] CreateCommand employee,
         ICreateCommandHandler commandHandler,
@@ -83,7 +82,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
             FastLogger.LogInfo( _logger, $"Created employee with id {result.Id}", null );
 
             localCache ??= HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
-            localCache.Remove( Commons.EMPLOYEE_CACHE_KEY );
+            localCache.Remove( Constants.EmployeeCacheKey );
 
             return CreatedAtAction( nameof( GetEmployee ), new { id = result.Id }, result );
         }
@@ -94,8 +93,8 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
-    [HttpPut( "upd" )]
-    [MapToApiVersion( Commons.EMPLOYEE_API_VER_1 )]
+    [HttpPut( ApiEndpoints.Employees.Update )]
+    [MapToApiVersion( ApiVersions.Employees.Current )]
     public async Task<ActionResult<Employee>> UpdateEmployee(
         [FromBody] UpdateCommand employee,
         IUpdateCommandHandler commandHandler,
@@ -107,7 +106,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
             FastLogger.LogInfo( _logger, $"Updated employee with id {result.Id}", null );
 
             localCache ??= HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
-            localCache.Remove( Commons.EMPLOYEE_CACHE_KEY );
+            localCache.Remove( Constants.EmployeeCacheKey );
             localCache.Remove( result.Id );
 
             return Ok( result );
@@ -119,10 +118,10 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
-    [HttpDelete( "del" )]
-    [MapToApiVersion( Commons.EMPLOYEE_API_VER_1 )]
+    [HttpDelete( ApiEndpoints.Employees.Delete )]
+    [MapToApiVersion( ApiVersions.Employees.Current )]
     public async Task<ActionResult> DeleteEmployee(
-        [FromQuery] Guid id,
+        [FromRoute] Guid id,
         IDeleteCommandHandler commandHandler,
         IMemoryCache? localCache = null )
     {
@@ -134,7 +133,7 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
             FastLogger.LogInfo( _logger, $"Deleted employee with id {id}", null );
 
             localCache ??= HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
-            localCache.Remove( Commons.EMPLOYEE_CACHE_KEY );
+            localCache.Remove( Constants.EmployeeCacheKey );
             localCache.Remove( employeeId.Id );
 
             return NoContent();

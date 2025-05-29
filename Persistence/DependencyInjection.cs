@@ -13,8 +13,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration )
     {
-        var connectionString = configuration.GetConnectionString( Commons.DB_CONNECTION_NAME ) ??
-            throw new InvalidOperationException( $"Connection string '{Commons.DB_CONNECTION_NAME}' is not configured." );
+        var connectionString = configuration.GetConnectionString( Constants.DatabaseConnName ) ??
+            throw new InvalidOperationException( $"Connection string '{Constants.DatabaseConnName}' is not configured." );
 
         services.AddDbContext<AppDbContext>( options =>
             options.UseSqlServer( connectionString,
@@ -29,7 +29,7 @@ public static class DependencyInjection
             null,
             "Sql-Server",
             HealthStatus.Unhealthy,
-            [ "ready" ],
+            ["ready"],
             TimeSpan.FromSeconds( 5 ) );
 
         services.AddMemoryCache();

@@ -13,6 +13,6 @@
     "editor.indentSize": "tabSize",
     "javascript.format.placeOpenBraceOnNewLineForControlBlocks": true,
     "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
-    "workbench.iconTheme": "material-icon-theme",
+    "workbench.iconTheme": "vs-seti",
     "redhat.telemetry.enabled": true
 }

@@ -4,21 +4,21 @@ using Microsoft.Extensions.Configuration;
 
 namespace Persistence;
 
-internal class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+internal class AppDbContextFactory: IDesignTimeDbContextFactory<AppDbContext>
 {
-	public AppDbContext CreateDbContext( string[] args )
-	{
-		var path = AppDomain.CurrentDomain.BaseDirectory;
+    public AppDbContext CreateDbContext( string[] args )
+    {
+        var path = AppDomain.CurrentDomain.BaseDirectory;
 
-		var builder = new ConfigurationBuilder()
-			.SetBasePath( path )
-			.AddJsonFile( Commons.SETTINGS_FILE_NAME );
+        var builder = new ConfigurationBuilder()
+            .SetBasePath( path )
+            .AddJsonFile( Constants.ConfigFileName );
 
-		var config = builder.Build();
-		var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+        var config = builder.Build();
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-		optionsBuilder.UseSqlServer(
-			config.GetConnectionString( Commons.DB_CONNECTION_NAME ) );
-		return new AppDbContext( optionsBuilder.Options );
-	}
+        optionsBuilder.UseSqlServer(
+            config.GetConnectionString( Constants.DatabaseConnName ) );
+        return new AppDbContext( optionsBuilder.Options );
+    }
 }
