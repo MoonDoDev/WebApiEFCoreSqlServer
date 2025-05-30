@@ -17,18 +17,16 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
     [HttpGet( ApiEndpoints.Employees.GetAll )]
     [MapToApiVersion( ApiVersions.Employees.Current )]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(
-        IQueryAllHandler queryHandler, IMemoryCache localCache )
+        IQueryAllHandler queryHandler,
+        IMemoryCache localCache,
+        CancellationToken cancellationToken = default )
     {
         try
         {
             if ( !localCache.TryGetValue( Constants.EmployeeCacheKey, out IEnumerable<Employee>? employees ) )
             {
-                employees = await queryHandler.Execute();
-
-                localCache.Set(
-                    Constants.EmployeeCacheKey,
-                    employees,
-                    TimeSpan.FromMinutes( 5 ) );
+                employees = await queryHandler.Execute( cancellationToken );
+                localCache.Set( Constants.EmployeeCacheKey, employees, TimeSpan.FromMinutes( 5 ) );
             }
 
             FastLogger.LogInfo( _logger, $"Fetched {employees!.Count()} employees.", null );
@@ -46,7 +44,8 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
     public async Task<ActionResult<Employee>> GetEmployee(
         [FromRoute] Guid id,
         IQueryOneHandler queryHandler,
-        IMemoryCache? localCache = null )
+        IMemoryCache? localCache = null,
+        CancellationToken cancellationToken = default )
     {
         try
         {
@@ -55,7 +54,8 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
             if ( !localCache.TryGetValue( id, out Employee? employee ) )
             {
                 var employeeId = new GetByIdQuery { Id = id };
-                employee = await queryHandler.Execute( employeeId );
+
+                employee = await queryHandler.Execute( employeeId, cancellationToken );
                 localCache.Set( id, employee, TimeSpan.FromMinutes( 5 ) );
             }
 
@@ -74,11 +74,12 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
     public async Task<ActionResult<Employee>> CreateEmployee(
         [FromBody] CreateCommand employee,
         ICreateCommandHandler commandHandler,
-        IMemoryCache? localCache = null )
+        IMemoryCache? localCache = null,
+        CancellationToken cancellationToken = default )
     {
         try
         {
-            var result = await commandHandler.Execute( employee );
+            var result = await commandHandler.Execute( employee, cancellationToken );
             FastLogger.LogInfo( _logger, $"Created employee with id {result.Id}", null );
 
             localCache ??= HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
@@ -98,11 +99,12 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
     public async Task<ActionResult<Employee>> UpdateEmployee(
         [FromBody] UpdateCommand employee,
         IUpdateCommandHandler commandHandler,
-        IMemoryCache? localCache = null )
+        IMemoryCache? localCache = null,
+        CancellationToken cancellationToken = default )
     {
         try
         {
-            var result = await commandHandler.Execute( employee );
+            var result = await commandHandler.Execute( employee, cancellationToken );
             FastLogger.LogInfo( _logger, $"Updated employee with id {result.Id}", null );
 
             localCache ??= HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
@@ -123,12 +125,13 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
     public async Task<ActionResult> DeleteEmployee(
         [FromRoute] Guid id,
         IDeleteCommandHandler commandHandler,
-        IMemoryCache? localCache = null )
+        IMemoryCache? localCache = null,
+        CancellationToken cancellationToken = default )
     {
         try
         {
             var employeeId = new DeleteCommand { Id = id };
-            await commandHandler.Execute( employeeId );
+            await commandHandler.Execute( employeeId, cancellationToken );
 
             FastLogger.LogInfo( _logger, $"Deleted employee with id {id}", null );
 
