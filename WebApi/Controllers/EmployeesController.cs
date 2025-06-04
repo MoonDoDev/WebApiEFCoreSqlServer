@@ -1,6 +1,7 @@
 using Application.Employees;
 using Asp.Versioning;
 using Domain.Employees;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Persistence;
@@ -9,13 +10,16 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [ApiVersion( ApiVersions.Employees.Current, Deprecated = false )]
-public class EmployeesController( ILogger<EmployeesController> logger ): ControllerBase
+public class EmployeesController(
+    ILogger<EmployeesController> logger ): ControllerBase
 {
     private readonly ILogger<EmployeesController> _logger = logger ??
         throw new ArgumentNullException( nameof( logger ) );
 
     [HttpGet( ApiEndpoints.Employees.GetAll )]
     [MapToApiVersion( ApiVersions.Employees.Current )]
+    [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IEnumerable<Employee> ) )]
+    [ProducesResponseType( StatusCodes.Status400BadRequest, Type = typeof( string ) )]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(
         IQueryAllHandler queryHandler,
         IMemoryCache localCache,
@@ -41,6 +45,9 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
 
     [HttpGet( ApiEndpoints.Employees.GetOne )]
     [MapToApiVersion( ApiVersions.Employees.Current )]
+    [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( Employee ) )]
+    [ProducesResponseType( StatusCodes.Status404NotFound, Type = typeof( string ) )]
+    [ProducesResponseType( StatusCodes.Status400BadRequest, Type = typeof( string ) )]
     public async Task<ActionResult<Employee>> GetEmployee(
         [FromRoute] Guid id,
         IQueryOneHandler queryHandler,
@@ -69,8 +76,12 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
+    [Authorize( AuthSettings.PolicyNames.TrustedMember )]
     [HttpPost( ApiEndpoints.Employees.Create )]
     [MapToApiVersion( ApiVersions.Employees.Current )]
+    [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( Employee ) )]
+    [ProducesResponseType( StatusCodes.Status400BadRequest, Type = typeof( string ) )]
+    [ProducesResponseType( StatusCodes.Status401Unauthorized, Type = typeof( string ) )]
     public async Task<ActionResult<Employee>> CreateEmployee(
         [FromBody] CreateCommand employee,
         ICreateCommandHandler commandHandler,
@@ -94,8 +105,13 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
+    [Authorize( AuthSettings.PolicyNames.TrustedMember )]
     [HttpPut( ApiEndpoints.Employees.Update )]
     [MapToApiVersion( ApiVersions.Employees.Current )]
+    [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( Employee ) )]
+    [ProducesResponseType( StatusCodes.Status404NotFound, Type = typeof( string ) )]
+    [ProducesResponseType( StatusCodes.Status400BadRequest, Type = typeof( string ) )]
+    [ProducesResponseType( StatusCodes.Status401Unauthorized, Type = typeof( string ) )]
     public async Task<ActionResult<Employee>> UpdateEmployee(
         [FromBody] UpdateCommand employee,
         IUpdateCommandHandler commandHandler,
@@ -120,8 +136,13 @@ public class EmployeesController( ILogger<EmployeesController> logger ): Control
         }
     }
 
+    [Authorize( AuthSettings.PolicyNames.AdminUser )]
     [HttpDelete( ApiEndpoints.Employees.Delete )]
     [MapToApiVersion( ApiVersions.Employees.Current )]
+    [ProducesResponseType( StatusCodes.Status204NoContent )]
+    [ProducesResponseType( StatusCodes.Status404NotFound, Type = typeof( string ) )]
+    [ProducesResponseType( StatusCodes.Status400BadRequest, Type = typeof( string ) )]
+    [ProducesResponseType( StatusCodes.Status401Unauthorized, Type = typeof( string ) )]
     public async Task<ActionResult> DeleteEmployee(
         [FromRoute] Guid id,
         IDeleteCommandHandler commandHandler,

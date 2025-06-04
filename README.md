@@ -66,6 +66,10 @@ In this layer, we do the following:
 - [x]  **Memory Cache**: The project uses memory cache to cache the results of the queries. This helps to improve the performance of the application by reducing the number of database calls.
 - [x]  **Api Versioning**: The project uses API versioning to allow for multiple versions of the API to coexist. This helps to ensure that the API is backward compatible and allows for future changes without breaking existing clients.
 - [x]  **Health Checks**: The project implements health checks to monitor the health of the application and the Database to ensure that the application is always available.
+- [x]  **Authentication**: The project implements user authentication with Bearer JWT. This helps to ensure that only authorized users can access the API.
+- [x]  **Authorization**: The project implements authorization to restrict access to certain API endpoints based on user roles. This helps to ensure that only authorized users can perform certain actions.
+- [x]  **OpenApi/Swagger**: The project uses OpenApi/Swagger to generate API documentation and to provide a user-friendly interface for testing the API endpoints. 
+- [x]  **Docker**: The project includes a Dockerfile to allow for easy deployment of the application in a containerized environment. To ensure that the application can run consistently across different environments.
 
 ## Dependencies
 
@@ -84,6 +88,7 @@ Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.5"
 "Asp.Versioning.Http" Version="8.1.0"
 "Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0"
 "Microsoft.AspNetCore.OpenApi" Version="9.0.5"
+"Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4"
 "Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1-Preview.1"
 "Swashbuckle.AspNetCore" Version="8.1.1"
 "Microsoft.EntityFrameworkCore.Tools" Version="9.0.5"

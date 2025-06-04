@@ -1,14 +1,45 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
+using Application;
 using System.Net.Mime;
+using System.Text;
 using System.Text.Json;
 
 namespace WebApi;
 
 internal static class Extensions
 {
-    public static void AddWebApiServices( this IServiceCollection services )
+    public static IServiceCollection AddWebApiServices(
+        this IServiceCollection services, IConfiguration configuration )
     {
+        services.AddAuthentication( x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        } ).AddJwtBearer( x =>
+        {
+            x.TokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKey = new SymmetricSecurityKey( Encoding.UTF8.GetBytes(
+                    ApiSettings.BuildJwtKey( configuration.GetValue<string>( ApiSettings.Key )! ) ) ),
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidIssuer = configuration.GetValue<string>( ApiSettings.Issuer )!,
+                ValidAudience = configuration.GetValue<string>( ApiSettings.Audience )!,
+                ValidateIssuer = true,
+                ValidateAudience = true
+            };
+        } );
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy( AuthSettings.PolicyNames.AdminUser, p => p.RequireClaim( AuthSettings.ClaimNames.AdminUser, "true" ) )
+            .AddPolicy( AuthSettings.PolicyNames.TrustedMember, p => p.RequireAssertion( c =>
+                c.User.HasClaim( m => m is { Type: AuthSettings.ClaimNames.AdminUser, Value: "true" } ) ||
+                c.User.HasClaim( m => m is { Type: AuthSettings.ClaimNames.TrustedMember, Value: "true" } ) ) );
+
         services.AddApiVersioning( verOptions =>
         {
             verOptions.DefaultApiVersion = new ApiVersion( ApiVersions.Employees.CurrentMajor, 0 );
@@ -24,6 +55,8 @@ internal static class Extensions
             explorerOptions.GroupNameFormat = "'v'V";
             explorerOptions.SubstituteApiVersionInUrl = true;
         } );
+
+        return services;
     }
 
     public static WebApplication MapWebApiServices( this WebApplication app )
@@ -54,6 +87,9 @@ internal static class Extensions
                 await context.Response.WriteAsync( result ).ConfigureAwait( false );
             }
         } );
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         return app;
     }

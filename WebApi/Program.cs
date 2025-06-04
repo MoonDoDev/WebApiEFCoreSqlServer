@@ -4,18 +4,18 @@ using WebApi;
 
 var builder = WebApplication.CreateBuilder( args );
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddWebApiServices( builder.Configuration );
 
 builder.Services.AddExceptionHandler<GlobalExceptionsHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddPersistence( builder.Configuration );
-builder.Services.AddWebApiServices();
 
 var app = builder.Build();
 
@@ -24,13 +24,10 @@ if ( app.Environment.IsDevelopment() )
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapOpenApi();
 }
 
-app.MapWebApiServices();
-
 app.UseHttpsRedirection();
-app.UseAuthorization();
+app.MapWebApiServices();
 
 app.MapControllers();
 app.UseExceptionHandler();
